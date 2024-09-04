@@ -1,0 +1,75 @@
+{
+  "webserver": {
+    "webserverIp": "0.0.0.0",
+    "webserverPort": "8080",
+    "banlist": [],
+    "chatEnabled": true,
+    "tuningLimit": false,
+    "tuningLowerLimit": "0",
+    "tuningUpperLimit": "108",
+    "defaultTheme": "theme1",
+    "presets": [
+      "87.5",
+      "87.5",
+      "87.5",
+      "87.5"
+    ],
+    "bgImage": "",
+    "rdsMode": false
+  },
+  "xdrd": {
+    "wirelessConnection": true,
+    "comPort": "tef",
+    "xdrdIp": "xdrd",
+    "xdrdPort": "7373",
+    "xdrdPassword": "password"
+  },
+  "audio": {
+    "audioDevice": "hw:ICUSBAUDIO7D",
+    "audioChannels": 2,
+    "audioBitrate": "192k",
+    "softwareMode": true,
+    "startupVolume": "1"
+  },
+  "identification": {
+    "token": null,
+    "tunerName": "FM Tuner",
+    "tunerDesc": "Default FM tuner description",
+    "lat": "52.589701",
+    "lon": "5.865240",
+    "broadcastTuner": false,
+    "proxyIp": "",
+    "contact": ""
+  },
+  "password": {
+    "tunePass": "",
+    "adminPass": "1234"
+  },
+  "plugins": [],
+  "device": "tef",
+  "defaultFreq": "87.5",
+  "publicTuner": true,
+  "lockToAdmin": false,
+  "autoShutdown": false,
+  "enableDefaultFreq": false,
+  "antennas": {
+    "enabled": false,
+    "ant1": {
+      "enabled": false,
+      "name": "Ant A"
+    },
+    "ant2": {
+      "enabled": false,
+      "name": "Ant B"
+    },
+    "ant3": {
+      "enabled": false,
+      "name": "Ant C"
+    },
+    "ant4": {
+      "enabled": false,
+      "name": "Ant D"
+    }
+  },
+  "bwSwitch": false
+}
