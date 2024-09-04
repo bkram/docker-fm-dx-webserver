@@ -1,0 +1,59 @@
+version: "3"
+
+services:
+  xdrd:
+    build:
+      context: .
+      dockerfile: Dockerfile.xdrd
+    image: xdrd:latest
+    devices:
+      - ${XDRD_HOST_PORT}:/dev/ttyUSB0
+    group_add:
+      - "${DIALOUT_GID}"
+    environment:
+      - DIALOUT_GID=${AUDIO_GID}
+      - XDRD_TCP_PORT=${XDRD_PORT}
+      - XDRD_PASSWORD=${XDRD_PASSWORD}
+    hostname: xdrd
+    ports:
+      - "${XDRD_PORT:-7373}:${XDRD_PORT:-7373}"
+    stdin_open: true
+    tty: true
+    networks:
+      - fmdx-network
+
+  fm-dx-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.fm-dx-webserver
+    image: fm-dx-webserver:latest
+    privileged: true
+    devices:
+      - /dev/snd # Pass through the host's sound devices
+    group_add:
+      - "${AUDIO_GID}" # Add the audio group to the container
+    ports:
+      - "${FMDX_WEB_PORT:-8080}:${FMDX_WEB_PORT:-8080}"
+    volumes:
+      - ./config:/opt/fm-dx-webserver/config/
+      - /etc/asound.conf:/etc/asound.conf:ro # Optional: bind your ALSA config if needed
+    depends_on:
+      - xdrd
+    hostname: fm-dx
+    environment:
+      - AUDIO_GID=${AUDIO_GID} # Pass the audio group ID to the container
+      - XDRD_HOST=xdrd
+      - XDRD_TCP_PORT=${XDRD_PORT}
+      - XDRD_PASSWORD=${XDRD_PASSWORD}
+      - FMDX_WEB_PORT=${FMDX_WEB_PORT}
+      - FMDX_ADMIN_PASSWORD=${FMDX_ADMIN_PASSWORD}
+      - FMDX_TUNER_NAME=${FMDX_TUNER_NAME}
+      - FMDX_TUNER_DESC=${FMDX_TUNER_DESC}
+      - FMDX_PROXY_IP=${FMDX_PROXY_IP}
+      - FMDX_CONTACT=${FMDX_CONTACT}
+    networks:
+      - fmdx-network
+
+networks:
+  fmdx-network:
+    driver: bridge

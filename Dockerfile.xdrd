@@ -1,0 +1,48 @@
+# Stage 1: Build stage
+FROM debian:bookworm as builder
+
+# Install necessary dependencies, clone the repository, and build the project
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git make gcc libssl-dev && \
+    git clone https://github.com/kkonradpl/xdrd.git /opt/xdrd && \
+    cd /opt/xdrd/ && make && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Final stage
+FROM debian:bookworm
+
+# Install runtime dependencies
+RUN apt-get update && apt-get upgrade -y && apt install -y libssl3 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy only the necessary artifacts from the builder stage
+COPY --from=builder /opt/xdrd/xdrd /opt/xdrd/xdrd
+
+# Create a non-root user 'xdrd' with UID 1000
+RUN useradd -u 1000 xdrd && \
+    usermod -aG dialout xdrd && \
+    chown xdrd:xdrd /opt/xdrd/xdrd
+
+# Set environment variables for configuration (with default values)
+ENV XDRD_SERIAL_PORT="/dev/ttyUSB0"
+ENV XDRD_TCP_PORT="7373"
+ENV XDRD_PASSWORD="password"
+
+# Set the working directory
+WORKDIR /opt/xdrd
+
+# Copy the entrypoint script and make it executable
+COPY xdrd/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Switch to the 'xdrd' user
+USER xdrd
+
+# Expose port 7373
+EXPOSE 7373
+
+# Set the entrypoint script as the entrypoint
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
