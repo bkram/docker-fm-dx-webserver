@@ -11,7 +11,7 @@ docker compose build
 Start in foreground
 
 ```sh
-docker compose build
+docker compose up
 ```
 
 Run in background
